@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "./renderList.dart";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -40,16 +41,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List randorList = [];
-  var currentNumber;
+  var currentNumber="";
 
   getList() async {
     var response =
         await Dio().get('https://csrng.net/csrng/csrng.php?min=1&max=1000');
-    randorList.add(response.data[0]['random'].toString());
-    setState(() {
-      currentNumber = response.data[0]['random'].toString();
-    });
-    calValue(currentNumber);
+   
+
+    if (response.data[0]['random'].toString() !="null") {
+       randorList.add(response.data[0]['random'].toString());
+      setState(() {
+        currentNumber = response.data[0]['random'].toString();
+      });
+    }
+    // calValue(currentNumber);
   }
 
   Widget myItmes() {
@@ -64,21 +69,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-      actions: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(right: 20.0, top: 20.0),
-                child: GestureDetector(
-                    onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => History()),
-                );
-              },
-                  child: Text("History",
-                      style: TextStyle(
-                          fontSize: 15.0, fontWeight: FontWeight.bold)),
-                )),
-          ],
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0, top: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => History()),
+                  );
+                },
+                child: Text("History",
+                    style:
+                        TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold)),
+              )),
+        ],
       ),
       body: Center(
         child: Column(
@@ -95,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   getList();
                 }),
+                 Text("current Number"),
             Text('$currentNumber '),
             Text("Previous Numbers"),
             myItmes()
